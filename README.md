@@ -1,1 +1,5 @@
-# comedor
+Proyecto Comedor Valleflor, 
+dedicado al area del comedor dentro de dicha empresa presenta una solucion web con herramientas básicas con el uso de una estrutura web para el alamacenamiento de registros de asistencia y resgitros extras generalizados a reducir el tiempo de tomar manualmanete cantidades de comidas entregadas cada dia en diferentes horarios o con diferente valor. Tomando en cuenta variables de dependencia como lo son valores no visibles pero definidos dentro de consultas por parte del servidor de base de datos y en el sistema de registro.
+Apartir de esto podemos tomar la información diaria recolectada para la generación de reportes fiables, tambien con esto determinar la toma de deciciones y pagos respecivos al servicio de comida dentro de la empresa.
+Uno de los puntos importantes dentro del sistema es que cuenta con un sistema basico de validacion de usuarios, para manejar el acceso a ciertas paginas dentro del proyecto.
+El proyecto se maneja de manera local con PHP, Apache Server, SQL Server y librerias dedicadas para este mismo.
