@@ -99,24 +99,7 @@ checkAccess([1, 2]);
             color: green;
         }
 
-        /* Botón para configurar subsidios */
-        .btn-configuracion {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            background-color: #ff6f00;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            padding: 10px 15px;
-            font-size: 16px;
-        }
-
-        .btn-configuracion:hover {
-            background-color: #ff9f00;
-        }
-
+      
         #diferencia {
             font-size: 2rem; /* Ajusta el tamaño a tu gusto */
             margin: 10px 0;
@@ -237,7 +220,7 @@ checkAccess([1, 2]);
                     icon: 'success',
                     title: 'Registro Exitoso',
                     text: `Nombre: ${nombreCompleto}\nÁrea: ${area}`,
-                    timer: 2500,
+                    timer: 1000,
                     timerProgressBar: true,
                     showConfirmButton: false,
                     customClass: {
@@ -253,7 +236,7 @@ checkAccess([1, 2]);
                     icon: 'error',
                     title: 'Error',
                     text: 'No se encontraron datos para la cédula proporcionada.',
-                    timer: 4000,
+                    timer: 3000,
                     timerProgressBar: true,
                     showConfirmButton: false,
                     customClass: {

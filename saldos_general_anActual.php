@@ -182,7 +182,7 @@ sqlsrv_close($conn);
                         <td><?php echo htmlspecialchars($row['almuerzos']); ?></td>
                         <td><?php echo htmlspecialchars($row['meriendas']); ?></td>
                         <td><?php echo htmlspecialchars($row['refrigerios']); ?></td>
-                        <td><?php echo number_format($row['total_empresa'], 2); ?> $</td>
+                        <td><?php echo number_format($row['total_consumo'], 2); ?> $</td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

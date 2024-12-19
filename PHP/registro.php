@@ -3,15 +3,13 @@ include 'db.php';
 require('fpdf/fpdf.php'); // Incluir la librería FPDF
 
 // Establecer la zona horaria
-//date_default_timezone_set('America/Guayaquil');
+ date_default_timezone_set('America/Guayaquil');
 
-// Establecer una fecha y hora específica para pruebas
-$fechaActual = '2024-11-11'; // Cambia a la fecha que desee
-$horaActual = '15:30:00';    // Cambia a la hora que desee
-
-// Si desearas utilizar la fecha y hora actuales, simplemente descomentas las siguientes líneas:
-//$fechaActual = date('Y-m-d');
-//$horaActual = date('H:i:s');
+//Fecha y hora actuales
+ $fechaActual = date('Y-m-d');
+ $horaActual = date('H:i:s');
+//$fechaActual = '2024-11-30';
+//$horaActual = '12:30:00';
 
 // Obtener los datos del formulario
 $cedula_emp = $_POST['cedula_emp'] ?? null;
@@ -52,8 +50,8 @@ if ($horaActual >= '04:00:00' && $horaActual <= '08:00:00') {
     exit();
 }
 
-// Obtener el id_com y subsidio
-$sqlObtenerIdCom = "SELECT id_com, subS FROM [dbo].[HorariosComida] WHERE tipo = ?";
+// Obtener el id_com y subsidio de la tabla HorariosComida
+$sqlObtenerIdCom = "SELECT id_com, tipo, subS FROM [dbo].[HorariosComida] WHERE tipo = ?";
 $paramsObtenerIdCom = array($tipoComida);
 $stmtObtenerIdCom = sqlsrv_query($conn, $sqlObtenerIdCom, $paramsObtenerIdCom);
 $resultObtenerIdCom = sqlsrv_fetch_array($stmtObtenerIdCom, SQLSRV_FETCH_ASSOC);
@@ -66,7 +64,38 @@ if ($resultObtenerIdCom === false || empty($resultObtenerIdCom['id_com'])) {
 $id_com = $resultObtenerIdCom['id_com'];
 $subsidioMensual = $resultObtenerIdCom['subS'];
 
-// Verificar el número de registros previos para el empleado en el día y tipo de comida
+// Verificar si existe un valor programado para el tipo de comida y fecha
+$sqlComidaProgramada = "
+    SELECT tipoCom, Valor 
+    FROM [dbo].[Comidas_ref_for] 
+    WHERE id_com = ? 
+      AND fechaInicio <= ? 
+      AND fechaFinal >= ?
+";
+$paramsComidaProgramada = array($id_com, $fechaActual, $fechaActual);
+$stmtComidaProgramada = sqlsrv_query($conn, $sqlComidaProgramada, $paramsComidaProgramada);
+
+if ($stmtComidaProgramada === false) {
+    die(print_r(sqlsrv_errors(), true)); // Manejo de errores
+}
+
+$tipoComidaProgramada = null;
+$valorComidaProgramada = 0;
+
+if ($rowComidaProgramada = sqlsrv_fetch_array($stmtComidaProgramada, SQLSRV_FETCH_ASSOC)) {
+    $tipoComidaProgramada = $rowComidaProgramada['tipoCom']; // Tipo de comida programada
+    $valorComidaProgramada = $rowComidaProgramada['Valor']; // Valor programado
+}
+
+// Determinar el valor final de la comida y el tipo a mostrar
+if ($tipoComidaProgramada) {
+    $tipoComida = $tipoComidaProgramada; // Sobrescribir con el tipo de comida programada
+    $valorComida = $valorComidaProgramada > 0 ? $valorComidaProgramada : $subsidioMensual;
+} else {
+    $valorComida = $subsidioMensual; // Usar valor normal si no hay programación
+}
+
+// Verificar si ya existe un registro para este tipo de comida
 $sqlCheck = "SELECT COUNT(*) AS count FROM [dbo].[registros] WHERE codigo_emp = ? AND fecha = ? AND id_com = ?";
 $paramsCheck = array($codigo_emp, $fechaActual, $id_com);
 $stmtCheck = sqlsrv_query($conn, $sqlCheck, $paramsCheck);
@@ -74,22 +103,20 @@ $resultCheck = sqlsrv_fetch_array($stmtCheck, SQLSRV_FETCH_ASSOC);
 
 // Validar el número de registros según el tipo de comida
 if ($tipoComida === 'Refrigerio') {
-    // Permitir hasta 2 registros de refrigerio
     if ($resultCheck['count'] >= 2) {
         header("Location: ../index_asis.php?success=false&error=refrigerio_maximo&cedula_temp=" . urlencode($cedula_emp));
         exit();
     }
 } else {
-    // Para otros tipos de comida, solo permitir un registro por día
     if ($resultCheck['count'] > 0) {
         header("Location: ../index_asis.php?success=false&error=registro_existente_en_rango&cedula_temp=" . urlencode($cedula_emp));
         exit();
     }
 }
 
-// Insertar el registro en la base de datos
+// Insertar el registro en la base de datos con el valor correspondiente
 $sqlInsert = "INSERT INTO [dbo].[registros] (codigo_emp, fecha, hora, id_com, valor_registro) VALUES (?, ?, ?, ?, ?)";
-$paramsInsert = array($codigo_emp, $fechaActual, $horaActual, $id_com, 0); // El valor de "valor_registro" se asignará después
+$paramsInsert = array($codigo_emp, $fechaActual, $horaActual, $id_com, $valorComida);
 $stmtInsert = sqlsrv_query($conn, $sqlInsert, $paramsInsert);
 
 if ($stmtInsert === false) {
@@ -97,59 +124,85 @@ if ($stmtInsert === false) {
     exit();
 }
 
-// Ejecutar el procedimiento almacenado y obtener el total_empresa
-$sqlProc = "EXEC [dbo].[sp_ObtenerSaldosPorCedula] ?";
-$paramsProc = array($cedula_emp);
-$stmtProc = sqlsrv_query($conn, $sqlProc, $paramsProc);
-
-if ($stmtProc === false) {
-    die(print_r(sqlsrv_errors(), true)); // Imprime los errores y detiene la ejecución
-}
-
-$resultProc = sqlsrv_fetch_array($stmtProc, SQLSRV_FETCH_ASSOC);
-
-if ($resultProc === false || !isset($resultProc['total_empresa'])) {
-    header("Location: ../index_asis.php?success=false&error=no_total_empresa&cedula_temp=" . urlencode($cedula_emp));
-    exit();
-}
-
-$valorDiario = $resultProc['total_empresa']; // Asignar el valor de total_empresa como valor diario
-
-// Actualizar el valor de "valor_registro" con el valor calculado
-$sqlUpdate = "UPDATE [dbo].[registros] SET valor_registro = ? WHERE codigo_emp = ? AND fecha = ? AND id_com = ?";
-$paramsUpdate = array($valorDiario, $codigo_emp, $fechaActual, $id_com);
-$stmtUpdate = sqlsrv_query($conn, $sqlUpdate, $paramsUpdate);
-
 // Obtener el saldo disponible del empleado
 $sqlObtenerSaldo = "SELECT saldo FROM [dbo].[Saldo_extras] WHERE codigo_emp = ?";
 $paramsObtenerSaldo = array($codigo_emp);
 $stmtObtenerSaldo = sqlsrv_query($conn, $sqlObtenerSaldo, $paramsObtenerSaldo);
-$resultObtenerSaldo = sqlsrv_fetch_array($stmtObtenerSaldo, SQLSRV_FETCH_ASSOC);
 
+if ($stmtObtenerSaldo === false) {
+    die(print_r(sqlsrv_errors(), true)); // Manejo de errores si la consulta falla
+}
+
+// Asignar el saldo o 0 si no existe
+$resultObtenerSaldo = sqlsrv_fetch_array($stmtObtenerSaldo, SQLSRV_FETCH_ASSOC);
 $saldoDisponible = $resultObtenerSaldo['saldo'] ?? 0;
 
-// Generar el PDF del ticket
-$pdf = new FPDF();
-$pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(40, 10, '                                              Ticket de Registro', 0, 1);
-$pdf->SetFont('Arial', '', 12);
-$pdf->Cell(40, 10, '                             Fecha: ' . $fechaActual, 0, 1);
-$pdf->Cell(40, 10, '                             Hora: ' . $horaActual, 0, 1);
-$pdf->Cell(40, 10, '                             Empleado: ' . $nombre_emp . ' ' . $apellido_emp, 0, 1);
-$pdf->Cell(40, 10, '                             Comida: ' . $tipoComida, 0, 1);
-$pdf->Cell(40, 10, '                             Acumulado de consumo: $' . number_format($valorDiario, 2), 0, 1);
-$pdf->Cell(40, 10, '                             Saldo Extras: $' . number_format($saldoDisponible, 2), 0, 1);
+// Formatear el saldo disponible
+$saldoDisponible = number_format($saldoDisponible, 2);
 
-// Define la ruta completa para guardar el PDF
-$pdfDir = 'C:\\pdfcomedor\\'; // Usa doble barra invertida
+// Generar el PDF del ticket
+$pdf = new FPDF('P', 'mm', array(100, 148)); // Formato Postcard 100 x 148 mm
+$pdf->AddPage();
+$pdf->SetMargins(1, 0, 1); // Márgenes ajustados (1 mm izquierda/derecha, 0 mm superior)
+$pdf->SetY(0); // Comienza en la posición 0 para pegarse al borde superior
+
+// Título alineado a la izquierda con líneas decorativas y logo
+$pdf->SetFont('Arial', 'B', 9);
+$pdf->Cell(0, 5, '---------------------------------------------------------------------------------------', 0, 1, 'L'); 
+$pdf->Cell(55, 5, '                Ticket de Registro', 0, 0, 'L'); 
+$pdf->Image('../IMG/logo.png', 50, $pdf->GetY() - 4, 14, 14);
+$pdf->Ln(7); // Salto de línea
+$pdf->Cell(0, 5, '---------------------------------------------------------------------------------------', 0, 1, 'L');
+
+// Detalles del ticket
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(25, 5, 'Fecha y Hora:', 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, $fechaActual . ' - ' . $horaActual, 0, 1, 'L');
+
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(25, 5, 'Nombre:', 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, explode(' ', $nombre_emp)[0] . ' ' . explode(' ', $apellido_emp)[0], 0, 1, 'L');
+
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(25, 5, utf8_decode('Cédula:'), 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, $cedula_emp, 0, 1, 'L');
+
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(25, 5, 'Tipo de comida:', 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, $tipoComida, 0, 1, 'L');
+
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(40, 5, 'Valor Consumo:', 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, '$' . number_format($valorComida, 2), 0, 1, 'L');
+
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->Cell(30, 5, 'Saldo Extras:', 0, 0, 'L'); 
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, '$' . number_format($saldoDisponible, 2), 0, 1, 'L');
+
+// Línea decorativa
+$pdf->SetFont('Arial', 'B', 9);
+$pdf->Cell(0, 5, '---------------------------------------------------------------------------------------', 0, 1, 'L');
+
+// Guardar y enviar a imprimir
+$pdfDir = 'C:\\pdfcomedor\\'; 
 $pdfFile = $pdfDir . 'ticket_' . $cedula_emp . '_' . time() . '.pdf';
 $pdf->Output('F', $pdfFile);
 
-// Cerrar la conexión
-sqlsrv_close($conn);
+// Ruta de SumatraPDF
+$sumatraPdfPath = 'C:\\Users\\administrator\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe';
+$printerName = "EPSON TM-T20III Receipt";
 
-// Redirigir al usuario con el PDF generado y el número de cédula
+// Imprimir usando SumatraPDF
+$command = '"' . $sumatraPdfPath . '" -print-to "' . $printerName . '" "' . $pdfFile . '"';
+exec($command);
+
+// Redirigir al usuario
 header("Location: ../index_asis.php?success=true&cedula_temp=" . urlencode($cedula_emp));
 exit();
 ?>

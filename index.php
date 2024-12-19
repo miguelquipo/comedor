@@ -4,10 +4,11 @@ checkAccess([1,2,3,4]);
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Opciones Decorado</title>
+    <title>Panel de Opciones</title>
     <link rel="icon" href="./IMG/logo.png">
     <!-- Incluye Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -21,12 +22,16 @@ checkAccess([1,2,3,4]);
             margin: 0;
             background-color: #f4f4f4;
         }
+
         .contenedor {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap; /* Permite que las tarjetas se ajusten en pantallas pequeñas */
-            justify-content: center; /* Alinea las tarjetas en el centro */
+            flex-wrap: wrap;
+            /* Permite que las tarjetas se ajusten a la pantalla */
+            justify-content: center;
+            /* Centra las tarjetas */
         }
+
         .card {
             width: 150px;
             height: 180px;
@@ -43,62 +48,98 @@ checkAccess([1,2,3,4]);
             cursor: pointer;
             overflow: hidden;
             text-decoration: none;
-            margin-bottom: 10px; /* Espacio entre las tarjetas cuando se apilan */
+            margin-bottom: 10px;
+            /* Espacio entre las tarjetas cuando se apilan */
         }
+
         .icono {
             font-size: 48px;
             color: #555;
             margin-bottom: 10px;
             transition: color 0.3s;
         }
+
         .titulo {
             font-size: 16px;
             color: #333;
             text-align: center;
         }
+
         /* Animación de Rebote */
         .card:hover .icono {
             animation: bounce 0.5s infinite alternate;
         }
+
         @keyframes bounce {
             from {
                 transform: translateY(0);
             }
+
             to {
                 transform: translateY(-10px);
             }
         }
+
         /* Colores específicos para cada tarjeta en hover */
         .asistencia:hover {
-            background-color: #ff6f61; /* Rojo claro */
+            background-color: #ff6f61;
+            /* Rojo claro */
         }
+
         .asistencia:hover .icono {
-            color: #ffffff; /* Icono blanco */
+            color: #ffffff;
+            /* Icono blanco */
         }
+
         .reportes:hover {
-            background-color: #42a5f5; /* Azul */
+            background-color: #42a5f5;
+            /* Azul */
         }
+
         .reportes:hover .icono {
-            color: #ffffff; /* Icono blanco */
+            color: #ffffff;
+            /* Icono blanco */
         }
+
         .ingresos:hover {
-            background-color: #66bb6a; /* Verde */
+            background-color: #66bb6a;
+            /* Verde */
         }
+
         .ingresos:hover .icono {
-            color: #ffffff; /* Icono blanco */
+            color: #ffffff;
+            /* Icono blanco */
         }
+
         .configuracion:hover {
-            background-color: #ffa726; /* Naranja */
+            background-color: #ffa726;
+            /* Naranja */
         }
+
         .configuracion:hover .icono {
-            color: #ffffff; /* Icono blanco */
+            color: #ffffff;
+            /* Icono blanco */
         }
+
         .recargas:hover {
-            background-color: #d4d412; 
+            background-color: #d4d412;
         }
+
         .recargas:hover .icono {
-            color: #ffffff; /* Icono blanco */
+            color: #ffffff;
+            /* Icono blanco */
         }
+
+        .personal:hover {
+            background-color: #6a1b9a;
+            /* Morado */
+        }
+
+        .personal:hover .icono {
+            color: #ffffff;
+            /* Icono blanco */
+        }
+
         .logout-button {
             position: fixed;
             bottom: 70px;
@@ -135,6 +176,7 @@ checkAccess([1,2,3,4]);
             white-space: nowrap;
             z-index: 9999;
         }
+
         .logo {
             position: absolute;
             top: 1px;
@@ -149,32 +191,46 @@ checkAccess([1,2,3,4]);
             right: 10px;
             transition: top 0.3s ease;
         }
+
         /* Cambios para dispositivos móviles */
         @media only screen and (max-width: 900px) {
-            .logo {
-                display: none; /* Oculta el logo en dispositivos móviles */
-            }
             .contenedor {
-                flex-direction: column; /* Cambia la disposición a columna en pantallas pequeñas */
-                align-items: center;
+                display: flex;
+                flex-wrap: wrap;
+                /* Permite que las tarjetas se ajusten en filas */
+                justify-content: center;
+                /* Alinea las tarjetas al centro */
+                gap: 15px;
+                /* Reduce la separación entre las tarjetas */
             }
+
             .card {
-                width: 100%; /* Hace que las tarjetas ocupen el ancho completo en pantallas pequeñas */
-                max-width: 300px; /* Limita el ancho máximo */
-                margin-bottom: 20px; /* Agrega espacio entre las tarjetas */
+                width: 45%;
+                /* Ajusta el ancho de las tarjetas para permitir dos columnas */
+                height: auto;
+                /* Permite que la altura se ajuste automáticamente */
+                margin-bottom: 15px;
+                /* Agrega espacio vertical entre tarjetas */
             }
+
             .logout-button {
-                bottom: 20px; /* Ajusta la posición en pantallas pequeñas */
+                bottom: 20px;
+                /* Ajusta la posición en pantallas pequeñas */
                 right: 20px;
             }
-        }
 
+            .logo {
+                display: none;
+                /* Oculta el logo en dispositivos móviles */
+            }
+        }
     </style>
 
 </head>
+
 <body>
-<img src="./IMG/logo.png" alt="Logo de la empresa" class="logo">
-<button class="logout-button" onclick="window.location.href='/comedor/PHP/Usuarios/logout.php';">
+    <img src="./IMG/logo.png" alt="Logo de la empresa" class="logo">
+    <button class="logout-button" onclick="window.location.href='/comedor/PHP/Usuarios/logout.php';">
         <i class="fas fa-door-open"></i>
     </button>
     <div class="contenedor">
@@ -191,13 +247,19 @@ checkAccess([1,2,3,4]);
             <div class="titulo">Ingresos Extras</div>
         </a>
         <a href="incrementar_saldo.php" class="card recargas">
-        <i class="fa-solid fa-money-bill icono"></i>
+            <i class="fa-solid fa-money-bill icono"></i>
             <div class="titulo">Recarga Extras</div>
         </a>
         <a href="configurarS.php" class="card configuracion">
             <i class="fas fa-cog icono"></i>
             <div class="titulo">Configuración /<br>Programación</div>
         </a>
+        <a href="ingreso_personal.php" class="card personal">
+            <i class="fas fa-user-plus icono"></i>
+            <div class="titulo">Registro Personal</div>
+        </a>
+
     </div>
 </body>
+
 </html>
