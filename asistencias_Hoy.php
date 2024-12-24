@@ -152,7 +152,7 @@ $saldosJson = json_encode($saldos);
             }
         }
         .container {
-            max-width: 1420px;
+            max-width: 1610px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -191,6 +191,7 @@ $saldosJson = json_encode($saldos);
                     <th>Cédula</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Finca</th>
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Desayunos</th>
@@ -207,6 +208,7 @@ $saldosJson = json_encode($saldos);
                         <td><?= htmlspecialchars($row['cedula_emp']) ?></td>
                         <td><?= htmlspecialchars($row['NOMBRE_EMP']) ?></td>
                         <td><?= htmlspecialchars($row['APELLIDO_EMP']) ?></td>
+                        <td><?= htmlspecialchars($row['nombre_gfc']) ?></td>
                         <td><?= htmlspecialchars($row['Fecha']) ?></td>
                         <td><?= isset($row['ultima_hora']) ? htmlspecialchars($row['ultima_hora']) : ''; ?></td>
                         <td><?= htmlspecialchars($row['desayunos']) ?></td>
@@ -220,7 +222,7 @@ $saldosJson = json_encode($saldos);
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5">Totales:</td>
+                    <td colspan="6">Totales:</td>
                     <td id="totalDesayunos"></td>
                     <td id="totalAlmuerzos"></td>
                     <td id="totalMeriendas"></td>
@@ -292,6 +294,7 @@ $saldosJson = json_encode($saldos);
                                 row.cedula_emp || '',
                                 row.NOMBRE_EMP || '',
                                 row.APELLIDO_EMP || '',
+                                row.nombre_gfc || '',
                                 row.Fecha || '',
                                 row.ultima_hora || '',
                                 row.desayunos || 0,

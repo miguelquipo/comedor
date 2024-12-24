@@ -102,7 +102,7 @@ sqlsrv_close($conn);
         }
 
         .container {
-            max-width: 1598px;
+            max-width: 1738px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -179,6 +179,7 @@ sqlsrv_close($conn);
                     <th>Cédula</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Finca</th>
                     <th>Desayuno.S</th>
                     <th>Almuerzo.S</th>
                     <th>Almuerzo.P</th>
@@ -196,6 +197,7 @@ sqlsrv_close($conn);
                     <td><?php echo htmlspecialchars($row['cedula_emp']); ?></td>
                     <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
                     <td><?php echo htmlspecialchars($row['APELLIDO_EMP']); ?></td>
+                    <td><?php echo htmlspecialchars($row['nombre_gfc']); ?></td>
                     <td><?php echo htmlspecialchars($row['desayuno_subsidio']); ?></td>
                     <td><?php echo htmlspecialchars($row['almuerzo_subsidio']); ?></td>
                     <td><?php echo htmlspecialchars($row['almuerzo_empresa']); ?></td>
@@ -210,7 +212,7 @@ sqlsrv_close($conn);
             <!-- Fila de totales dentro de la misma tabla -->
             <tfoot>
                 <tr class="totales">
-                    <td colspan="4">Totales:</td>
+                    <td colspan="5">Totales:</td>
                     <td id="totalDesayunoS">0.00 $</td>
                     <td id="totalAlmuerzoS">0.00 $</td>
                     <td id="totalAlmuerzoP">0.00 $</td>
@@ -228,71 +230,7 @@ sqlsrv_close($conn);
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            var table = $('#saldosTable').DataTable({
-                "paging": true,
-                "searching": true,
-                "ordering": true,
-                "info": true
-            });
-
-            function actualizarTotales() {
-                let totalDesayunoS = 0, totalAlmuerzoS = 0, totalAlmuerzoP = 0,
-                    totalMeriendaS = 0, totalRefrigerioS = 0, totalS = 0, totalP = 0, totalGeneral = 0;
-
-                table.rows({ filter: 'applied' }).every(function () {
-                    let data = this.data();
-
-                    totalDesayunoS += parseFloat(data[4]) || 0;
-                    totalAlmuerzoS += parseFloat(data[5]) || 0;
-                    totalAlmuerzoP += parseFloat(data[6]) || 0;
-                    totalMeriendaS += parseFloat(data[7]) || 0;
-                    totalRefrigerioS += parseFloat(data[8]) || 0;
-                    totalS += parseFloat(data[9]) || 0;
-                    totalP += parseFloat(data[10]) || 0;
-                    totalGeneral += parseFloat(data[11]) || 0;
-                });
-
-                $('#totalDesayunoS').text(totalDesayunoS.toFixed(2) + " $");
-                $('#totalAlmuerzoS').text(totalAlmuerzoS.toFixed(2) + " $");
-                $('#totalAlmuerzoP').text(totalAlmuerzoP.toFixed(2) + " $");
-                $('#totalMeriendaS').text(totalMeriendaS.toFixed(2) + " $");
-                $('#totalRefrigerioS').text(totalRefrigerioS.toFixed(2) + " $");
-                $('#totalS').text(totalS.toFixed(2) + " $");
-                $('#totalP').text(totalP.toFixed(2) + " $");
-                $('#totalGeneral').text(totalGeneral.toFixed(2) + " $");
-            }
-
-            actualizarTotales();
-
-            table.on('draw', function () {
-                actualizarTotales();
-            });
-
-            $('#filterButton').click(function () {
-                let startDate = $('#startDate').val();
-                let endDate = $('#endDate').val();
-
-                $.fn.dataTable.ext.search.pop();
-                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                    let rowDate = new Date(data[0]);
-                    let start = new Date(startDate);
-                    let end = new Date(endDate);
-                    return (startDate === "" || rowDate >= start) && (endDate === "" || rowDate <= end);
-                });
-
-                table.draw();
-            });
-
-            $('#clearFilterButton').click(function () {
-                $('#startDate').val('');
-                $('#endDate').val('');
-                $.fn.dataTable.ext.search.pop();
-                table.draw();
-            });
-        });
-    </script>
+    
     <script>
         $(document).ready(function () {
             var table = $('#saldosTable').DataTable({

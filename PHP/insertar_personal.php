@@ -8,6 +8,7 @@ $apellido_emp = strtoupper(trim($_POST['apellido_emp']));
 $cedula_emp = trim($_POST['cedula_emp']);
 $nombre_efc = trim($_POST['nombre_efc']);
 $nueva_efc = strtoupper(trim($_POST['nueva_efc']));
+$nombre_gfc = trim($_POST['nombre_gfc']);
 
 // Validar si la cédula ya existe
 $query = "SELECT COUNT(*) AS total FROM personal WHERE CEDULA_EMP = ?";
@@ -60,9 +61,9 @@ if (!empty($nueva_efc)) {
 }
 
 // Insertar registro del empleado
-$query = "INSERT INTO personal (codigo_emp, NOMBRE_EMP, APELLIDO_EMP, NOMBRE_EST, nombre_efc, codigo_efc, CEDULA_EMP) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)";
-$params = [$codigo_emp, $nombre_emp, $apellido_emp, 'Activo', $nombre_efc, $codigo_efc, $cedula_emp];
+$query = "INSERT INTO personal (codigo_emp, NOMBRE_EMP, APELLIDO_EMP, NOMBRE_EST, nombre_efc, codigo_efc, CEDULA_EMP, nombre_gfc) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+$params = [$codigo_emp, $nombre_emp, $apellido_emp, 'Activo', $nombre_efc, $codigo_efc, $cedula_emp, $nombre_gfc];
 $result = sqlsrv_query($conn, $query, $params);
 
 if ($result) {

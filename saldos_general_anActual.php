@@ -100,7 +100,7 @@ sqlsrv_close($conn);
         }
 
         .container {
-            max-width: 1164px;
+            max-width: 1264px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -164,6 +164,7 @@ sqlsrv_close($conn);
                     <th>Cédula</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Finca</th>
                     <th>Desayunos</th>
                     <th>Almuerzos</th>
                     <th>Meriendas</th>
@@ -178,6 +179,7 @@ sqlsrv_close($conn);
                         <td><?php echo htmlspecialchars($row['cedula_emp']); ?></td>
                         <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
                         <td><?php echo htmlspecialchars($row['APELLIDO_EMP']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nombre_gfc']); ?></td>
                         <td><?php echo htmlspecialchars($row['desayunos']); ?></td>
                         <td><?php echo htmlspecialchars($row['almuerzos']); ?></td>
                         <td><?php echo htmlspecialchars($row['meriendas']); ?></td>
@@ -189,7 +191,7 @@ sqlsrv_close($conn);
             <!-- Fila de totales -->
             <tfoot>
                 <tr>
-                    <td colspan="3">Totales:</td>
+                    <td colspan="4">Totales:</td>
                     <td id="totalDesayunos">0</td>
                     <td id="totalAlmuerzos">0</td>
                     <td id="totalMeriendas">0</td>

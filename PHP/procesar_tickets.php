@@ -6,7 +6,7 @@ require('fpdf/fpdf.php'); // Incluir la librería FPDF
 $cedulas_emp = $_POST['cedulas'] ?? [];
 
 if (empty($cedulas_emp)) {
-    echo json_encode(['message' => 'No se seleccionaron cédulas.']);
+    echo json_encode(['success' => false, 'message' => 'No se seleccionaron cédulas.']);
     exit();
 }
 
@@ -18,6 +18,10 @@ $horaActual = date('H:i:s');
 // Carpeta donde se guardarán los archivos PDF
 $pdfDir = 'C:\\pdfcomedor\\'; 
 
+// Ruta de SumatraPDF
+$sumatraPdfPath = 'C:\\Users\\administrator\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe';
+$printerName = "EPSON TM-T20III Receipt";
+
 foreach ($cedulas_emp as $cedula_emp) {
     // Buscar los datos del empleado
     $sqlBuscarEmpleado = "SELECT codigo_emp, NOMBRE_EMP, APELLIDO_EMP FROM [dbo].[personal] WHERE cedula_emp = ?";
@@ -26,7 +30,7 @@ foreach ($cedulas_emp as $cedula_emp) {
     $resultBuscarEmpleado = sqlsrv_fetch_array($stmtBuscarEmpleado, SQLSRV_FETCH_ASSOC);
 
     if ($resultBuscarEmpleado === false || empty($resultBuscarEmpleado['codigo_emp'])) {
-        header("Location: ../index_asis.php?success=false&error=cedula_no_encontrada&cedula_temp=" . urlencode($cedula_emp));
+        echo json_encode(['success' => false, 'message' => 'Cédula no encontrada', 'cedula' => $cedula_emp]);
         exit();
     }
 
@@ -46,7 +50,7 @@ foreach ($cedulas_emp as $cedula_emp) {
     } elseif ($horaActual > '18:00:00') {
         $tipoComida = 'Merienda';
     } else {
-        header("Location: ../index_asis.php?success=false&error=hora_fuera_de_rango&cedula_temp=" . urlencode($cedula_emp));
+        echo json_encode(['success' => false, 'message' => 'Hora fuera de rango para comida', 'cedula' => $cedula_emp]);
         exit();
     }
 
@@ -57,7 +61,7 @@ foreach ($cedulas_emp as $cedula_emp) {
     $resultObtenerIdCom = sqlsrv_fetch_array($stmtObtenerIdCom, SQLSRV_FETCH_ASSOC);
 
     if ($resultObtenerIdCom === false || empty($resultObtenerIdCom['id_com'])) {
-        header("Location: ../index_asis.php?success=false&error=tipo_comida_no_encontrado&cedula_temp=" . urlencode($cedula_emp));
+        echo json_encode(['success' => false, 'message' => 'Tipo de comida no encontrado', 'cedula' => $cedula_emp]);
         exit();
     }
 
@@ -76,7 +80,8 @@ foreach ($cedulas_emp as $cedula_emp) {
     $stmtComidaProgramada = sqlsrv_query($conn, $sqlComidaProgramada, $paramsComidaProgramada);
 
     if ($stmtComidaProgramada === false) {
-        die(print_r(sqlsrv_errors(), true)); // Manejo de errores
+        echo json_encode(['success' => false, 'message' => 'Error al verificar comida programada', 'cedula' => $cedula_emp]);
+        exit();
     }
 
     $tipoComidaProgramada = null;
@@ -104,12 +109,12 @@ foreach ($cedulas_emp as $cedula_emp) {
     // Validar el número de registros según el tipo de comida
     if ($tipoComida === 'Refrigerio') {
         if ($resultCheck['count'] >= 2) {
-            header("Location: ../index_asis.php?success=false&error=refrigerio_maximo&cedula_temp=" . urlencode($cedula_emp));
+            echo json_encode(['success' => false, 'message' => 'Máximo de refrigerios alcanzado', 'cedula' => $cedula_emp]);
             exit();
         }
     } else {
         if ($resultCheck['count'] > 0) {
-            header("Location: ../index_asis.php?success=false&error=registro_existente_en_rango&cedula_temp=" . urlencode($cedula_emp));
+            echo json_encode(['success' => false, 'message' => 'Ya existe un registro para este tipo de comida', 'cedula' => $cedula_emp]);
             exit();
         }
     }
@@ -120,7 +125,7 @@ foreach ($cedulas_emp as $cedula_emp) {
     $stmtInsert = sqlsrv_query($conn, $sqlInsert, $paramsInsert);
 
     if ($stmtInsert === false) {
-        header("Location: ../index_asis.php?success=false&error=guardado_fallido&cedula_temp=" . urlencode($cedula_emp));
+        echo json_encode(['success' => false, 'message' => 'Error al guardar el registro', 'cedula' => $cedula_emp]);
         exit();
     }
 
@@ -130,7 +135,8 @@ foreach ($cedulas_emp as $cedula_emp) {
     $stmtObtenerSaldo = sqlsrv_query($conn, $sqlObtenerSaldo, $paramsObtenerSaldo);
 
     if ($stmtObtenerSaldo === false) {
-        die(print_r(sqlsrv_errors(), true)); // Manejo de errores si la consulta falla
+        echo json_encode(['success' => false, 'message' => 'Error al obtener saldo', 'cedula' => $cedula_emp]);
+        exit();
     }
 
     // Asignar el saldo o 0 si no existe
@@ -192,7 +198,11 @@ foreach ($cedulas_emp as $cedula_emp) {
     // Guardar y enviar a imprimir
     $pdfFile = $pdfDir . 'ticket_' . $cedula_emp . '_' . time() . '.pdf';
     $pdf->Output('F', $pdfFile); // Guardar en la ruta
+    
+// Imprimir usando SumatraPDF
+$command = '"' . $sumatraPdfPath . '" -print-to "' . $printerName . '" "' . $pdfFile . '"';
+exec($command);
 }
 
-echo json_encode(['message' => 'Tickets generados y guardados correctamente.']);
+echo json_encode(['success' => true, 'message' => 'Tickets generados y guardados correctamente.']);
 ?>

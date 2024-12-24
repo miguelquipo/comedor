@@ -140,6 +140,15 @@ checkAccess([1,2,3,4]);
             /* Icono blanco */
         }
 
+        .impresion:hover {
+            background-color: #5DE2E7;
+            /* Morado */
+        }
+
+        .impresion:hover .icono {
+            color: #ffffff;
+            /* Icono blanco */
+        }
         .logout-button {
             position: fixed;
             bottom: 70px;
@@ -242,6 +251,10 @@ checkAccess([1,2,3,4]);
             <i class="fas fa-chart-bar icono"></i>
             <div class="titulo">Reportes</div>
         </a>
+        <a href="distinct_impr.php" class="card impresion">
+            <i class="fa-solid fa-print icono"></i>
+            <div class="titulo">Impresiones</div>
+        </a>
         <a href="index_extras.php" class="card ingresos">
             <i class="fas fa-dollar-sign icono"></i>
             <div class="titulo">Ingresos Extras</div>
@@ -258,7 +271,7 @@ checkAccess([1,2,3,4]);
             <i class="fas fa-user-plus icono"></i>
             <div class="titulo">Registro Personal</div>
         </a>
-
+        
     </div>
 </body>
 

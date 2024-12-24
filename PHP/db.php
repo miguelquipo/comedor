@@ -1,9 +1,9 @@
 <?php
    // Conexión a SQL Server
-$serverName = "localhost\\SQLEXPRESS";
+$serverName = "localhost";
 $uid = "sa";
 $pwd = "faber33";
-$databaseName = "dbcomedor1219";
+$databaseName = "dbcomedor1912";
 $connectionInfo = array(
     "UID" => $uid,
     "PWD" => $pwd,
