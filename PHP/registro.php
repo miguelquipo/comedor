@@ -1,5 +1,6 @@
 <?php
 include 'db.php';
+include 'determinar_tipo_comida.php';
 require('fpdf/fpdf.php'); // Incluir la librería FPDF
 
 // Establecer la zona horaria
@@ -34,18 +35,11 @@ $codigo_emp = $resultBuscarEmpleado['codigo_emp'];
 $nombre_emp = $resultBuscarEmpleado['NOMBRE_EMP'];
 $apellido_emp = $resultBuscarEmpleado['APELLIDO_EMP'];
 
-// Determinar el tipo de comida basado en la hora actual
-if ($horaActual >= '04:00:00' && $horaActual <= '08:00:00') {
-    $tipoComida = 'Desayuno';
-} elseif ($horaActual >= '08:00:01' && $horaActual <= '11:19:59') {
-    $tipoComida = 'Refrigerio';
-} elseif ($horaActual >= '11:20:00' && $horaActual <= '15:00:00') {
-    $tipoComida = 'Almuerzo';
-} elseif ($horaActual >= '15:00:01' && $horaActual <= '17:59:59') {
-    $tipoComida = 'Refrigerio';
-} elseif ($horaActual > '18:00:00') {
-    $tipoComida = 'Merienda';
-} else {
+// Llamar a la función
+$tipoComida = determinarTipoComida($horaActual);
+
+if ($tipoComida === null) {
+    // Hora fuera de rango, redirigir con parámetros en la URL
     header("Location: ../index_asis.php?success=false&error=hora_fuera_de_rango&cedula_temp=" . urlencode($cedula_emp));
     exit();
 }

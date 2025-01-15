@@ -127,8 +127,8 @@ sqlsrv_close($conn);
         <tr>
             <th>Seleccionar</th>
             <th>Cédula</th>
-            <th>Nombre</th>
             <th>Apellido</th>
+            <th>Nombre</th>
             <th>Entidad</th>
             <th>Grupo</th>
         </tr>
@@ -144,10 +144,10 @@ sqlsrv_close($conn);
                 <?php echo htmlspecialchars($row['CEDULA_EMP']); ?>
             </td>
             <td>
-                <?php echo htmlspecialchars($row['NOMBRE_EMP']); ?>
+                <?php echo htmlspecialchars($row['APELLIDO_EMP']); ?>
             </td>
             <td>
-                <?php echo htmlspecialchars($row['APELLIDO_EMP']); ?>
+                <?php echo htmlspecialchars($row['NOMBRE_EMP']); ?>
             </td>
             <td>
                 <?php echo htmlspecialchars($row['NOMBRE_EFC']); ?>

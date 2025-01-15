@@ -274,6 +274,9 @@ sqlsrv_close($conn);
         </div>
     </div>
 </div>
+<button class="btn btn-success mt-4" onclick="window.location.href='editar_horarios.php';">
+    Aquí para cambiar los horarios de la comida
+</button>
 
 <script>
     // Actualiza el valor del campo oculto `tipoComida` cuando cambie el select o el input de especificación

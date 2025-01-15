@@ -189,9 +189,10 @@ $saldosJson = json_encode($saldos);
             <thead class="thead-light">
                 <tr>
                     <th>Cédula</th>
-                    <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Nombre</th>
                     <th>Finca</th>
+                    <th>Área</th>
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Desayunos</th>
@@ -206,9 +207,10 @@ $saldosJson = json_encode($saldos);
                 <?php foreach ($saldos as $row): ?>
                     <tr>
                         <td><?= htmlspecialchars($row['cedula_emp']) ?></td>
-                        <td><?= htmlspecialchars($row['NOMBRE_EMP']) ?></td>
                         <td><?= htmlspecialchars($row['APELLIDO_EMP']) ?></td>
+                        <td><?= htmlspecialchars($row['NOMBRE_EMP']) ?></td>
                         <td><?= htmlspecialchars($row['nombre_gfc']) ?></td>
+                        <td><?= htmlspecialchars($row['nombre_efc']) ?></td>
                         <td><?= htmlspecialchars($row['Fecha']) ?></td>
                         <td><?= isset($row['ultima_hora']) ? htmlspecialchars($row['ultima_hora']) : ''; ?></td>
                         <td><?= htmlspecialchars($row['desayunos']) ?></td>
@@ -222,7 +224,7 @@ $saldosJson = json_encode($saldos);
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6">Totales:</td>
+                    <td colspan="7">Totales:</td>
                     <td id="totalDesayunos"></td>
                     <td id="totalAlmuerzos"></td>
                     <td id="totalMeriendas"></td>
@@ -237,80 +239,82 @@ $saldosJson = json_encode($saldos);
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Inicializar DataTable con pie de página
-            var table = $('#saldosTable').DataTable({
-                paging: true,
-                searching: true,
-                ordering: false,
-                info: true,
-                autoWidth: false,
-                footerCallback: function (row, data, start, end, display) {
-                    // Calcular y mostrar totales en el pie de página para los datos visibles
-                    var api = this.api();
+      $(document).ready(function () {
+    // Inicializar DataTable con pie de página
+    var table = $('#saldosTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        info: true,
+        autoWidth: false,
+        footerCallback: function (row, data, start, end, display) {
+            // Calcular y mostrar totales en el pie de página para los datos visibles
+            var api = this.api();
 
-                    // Helper para sumar una columna específica
-                    var intVal = function (i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 :
-                            typeof i === 'number' ? i : 0;
-                    };
+            // Helper para sumar una columna específica
+            var intVal = function (i) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '') * 1 :
+                    typeof i === 'number' ? i : 0;
+            };
 
-                    // Actualizar cada total en el pie de tabla
-                    $('#totalDesayunos').html(
-                        api.column(5, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
-                    );
-                    $('#totalAlmuerzos').html(
-                        api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
-                    );
-                    $('#totalMeriendas').html(
-                        api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
-                    );
-                    $('#totalRefrigerios').html(
-                        api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
-                    );
-                    $('#totalComidas').html(
-                        api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0).toFixed(2) + ' $'
-                    );
-                    $('#totalSaldo').html(
-                        api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0).toFixed(2) + ' $'
-                    );
-                }
-            });
+            // Actualizar cada total en el pie de tabla
+            $('#totalDesayunos').html(
+                api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
+            );
+            $('#totalAlmuerzos').html(
+                api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
+            );
+            $('#totalMeriendas').html(
+                api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
+            );
+            $('#totalRefrigerios').html(
+                api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0)
+            );
+            $('#totalComidas').html(
+                api.column(11, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0).toFixed(2) + ' $'
+            );
+            $('#totalSaldo').html(
+                api.column(12, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0).toFixed(2) + ' $'
+            );
+        }
+    });
 
-            // Actualizar los datos cada segundo
-            setInterval(function () {
-                $.ajax({
-                    url: '', // Llama a este archivo PHP
-                    method: 'GET',
-                    data: { update_table: true },
-                    dataType: 'json',
-                    success: function (data) {
-                        table.clear(); // Limpiar la tabla
+    // Actualizar los datos cada segundo
+    setInterval(function () {
+        $.ajax({
+            url: '', // Llama a este archivo PHP
+            method: 'GET',
+            data: { update_table: true },
+            dataType: 'json',
+            success: function (data) {
+                table.clear(); // Limpiar la tabla
 
-                        // Agregar filas nuevas
-                        data.forEach(function (row) {
-                            table.row.add([
-                                row.cedula_emp || '',
-                                row.NOMBRE_EMP || '',
-                                row.APELLIDO_EMP || '',
-                                row.nombre_gfc || '',
-                                row.Fecha || '',
-                                row.ultima_hora || '',
-                                row.desayunos || 0,
-                                row.almuerzos || 0,
-                                row.meriendas || 0,
-                                row.refrigerios || 0,
-                                (row.total_subsidios || 0).toFixed(2) + ' $',
-                                (row.saldo_total || 0).toFixed(2) + ' $'
-                            ]);
-                        });
-
-                        table.draw(); // Redibujar la tabla y actualizar el pie de página
-                    }
+                // Agregar filas nuevas
+                data.forEach(function (row) {
+                    table.row.add([
+                        row.cedula_emp || '',
+                        row.APELLIDO_EMP || '',
+                        row.NOMBRE_EMP || '',
+                        row.nombre_gfc || '',
+                        row.nombre_efc || '',
+                        row.Fecha || '',
+                        row.ultima_hora || '',
+                        row.desayunos || 0,
+                        row.almuerzos || 0,
+                        row.meriendas || 0,
+                        row.refrigerios || 0,
+                        (row.total_subsidios || 0).toFixed(2) + ' $',
+                        (row.saldo_total || 0).toFixed(2) + ' $'
+                    ]);
                 });
-            }, 1000); // Intervalo de 1 segundo
+
+                table.draw(); // Redibujar la tabla y actualizar el pie de página
+            }
         });
+    }, 1000); // Intervalo de 1 segundo
+});
+
     </script>
 
 </body>

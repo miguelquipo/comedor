@@ -1,6 +1,9 @@
 <?php
 include './PHP/Usuarios/check_access.php';
-checkAccess([1,2,3,4]);
+checkAccess([1, 2, 3, 4]);
+
+// Ya tienes el 'role_id' en la sesión después de la validación de checkAccess
+$user_role = $_SESSION['role_id']; 
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -237,42 +240,89 @@ checkAccess([1,2,3,4]);
 
 </head>
 
+
 <body>
     <img src="./IMG/logo.png" alt="Logo de la empresa" class="logo">
     <button class="logout-button" onclick="window.location.href='/comedor/PHP/Usuarios/logout.php';">
         <i class="fas fa-door-open"></i>
     </button>
+    
     <div class="contenedor">
-        <a href="index_asis.php" class="card asistencia">
-            <i class="fas fa-check-circle icono"></i>
-            <div class="titulo">Ingresos</div>
-        </a>
-        <a href="list_reports.php" class="card reportes">
-            <i class="fas fa-chart-bar icono"></i>
-            <div class="titulo">Reportes</div>
-        </a>
-        <a href="distinct_impr.php" class="card impresion">
-            <i class="fa-solid fa-print icono"></i>
-            <div class="titulo">Impresiones</div>
-        </a>
-        <a href="index_extras.php" class="card ingresos">
-            <i class="fas fa-dollar-sign icono"></i>
-            <div class="titulo">Ingresos Extras</div>
-        </a>
-        <a href="incrementar_saldo.php" class="card recargas">
-            <i class="fa-solid fa-money-bill icono"></i>
-            <div class="titulo">Recarga Extras</div>
-        </a>
-        <a href="configurarS.php" class="card configuracion">
-            <i class="fas fa-cog icono"></i>
-            <div class="titulo">Configuración /<br>Programación</div>
-        </a>
-        <a href="ingreso_personal.php" class="card personal">
-            <i class="fas fa-user-plus icono"></i>
-            <div class="titulo">Registro Personal</div>
-        </a>
-        
+        <!-- Mostrar para rol 1 (Administrador): Todas las opciones -->
+        <?php if ($user_role == 1): ?>
+            <a href="index_asis.php" class="card asistencia">
+                <i class="fas fa-check-circle icono"></i>
+                <div class="titulo">Ingresos</div>
+            </a>
+            <a href="list_reports.php" class="card reportes">
+                <i class="fas fa-chart-bar icono"></i>
+                <div class="titulo">Reportes</div>
+            </a>
+            <a href="configurarS.php" class="card configuracion">
+                <i class="fas fa-cog icono"></i>
+                <div class="titulo">Configuración /<br>Programación</div>
+            </a>
+            <a href="ingreso_personal.php" class="card personal">
+                <i class="fas fa-user-plus icono"></i>
+                <div class="titulo">Registro Personal</div>
+            </a>
+            <a href="distinct_impr.php" class="card impresion">
+                <i class="fa-solid fa-print icono"></i>
+                <div class="titulo">Impresiones</div>
+            </a>
+            <a href="index_extras.php" class="card ingresos">
+                <i class="fas fa-dollar-sign icono"></i>
+                <div class="titulo">Ingresos Extras</div>
+            </a>
+            <a href="incrementar_saldo.php" class="card recargas">
+                <i class="fa-solid fa-money-bill icono"></i>
+                <div class="titulo">Recarga Extras</div>
+            </a>
+            <a href="./PHP/Usuarios/register.php" class="card nuevo-boton">
+                <i class="fas fa-plus icono"></i>
+                <div class="titulo">Agregar Usuarios</div>
+            </a>
+        <?php endif; ?>
+
+        <!-- Mostrar solo para rol 2: "Ingresos" -->
+        <?php if ($user_role == 2): ?>
+            <a href="index_asis.php" class="card asistencia">
+                <i class="fas fa-check-circle icono"></i>
+                <div class="titulo">Ingresos</div>
+            </a>
+        <?php endif; ?>
+
+        <!-- Mostrar solo para rol 3: "Reportes", "Configuración / Programación" y "Registro Personal" -->
+        <?php if ($user_role == 3): ?>
+            <a href="list_reports.php" class="card reportes">
+                <i class="fas fa-chart-bar icono"></i>
+                <div class="titulo">Reportes</div>
+            </a>
+            <a href="distinct_impr.php" class="card impresion">
+                <i class="fa-solid fa-print icono"></i>
+                <div class="titulo">Impresiones</div>
+            </a>
+            <a href="configurarS.php" class="card configuracion">
+                <i class="fas fa-cog icono"></i>
+                <div class="titulo">Configuración /<br>Programación</div>
+            </a>
+            <a href="ingreso_personal.php" class="card personal">
+                <i class="fas fa-user-plus icono"></i>
+                <div class="titulo">Registro Personal</div>
+            </a>
+        <?php endif; ?>
+
+        <!-- Mostrar solo para rol 4: "Impresiones", "Ingresos Extras", "Recarga Extras" -->
+        <?php if ($user_role == 4): ?>
+            <a href="index_extras.php" class="card ingresos">
+                <i class="fas fa-dollar-sign icono"></i>
+                <div class="titulo">Ingresos Extras</div>
+            </a>
+            <a href="incrementar_saldo.php" class="card recargas">
+                <i class="fa-solid fa-money-bill icono"></i>
+                <div class="titulo">Recarga Extras</div>
+            </a>
+        <?php endif; ?>
     </div>
 </body>
-
 </html>

@@ -177,9 +177,10 @@ sqlsrv_close($conn);
                 <tr>
                     <th>Mes</th>
                     <th>Cédula</th>
-                    <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Nombre</th>
                     <th>Finca</th>
+                    <th>Área</th>
                     <th>Desayuno.S</th>
                     <th>Almuerzo.S</th>
                     <th>Almuerzo.P</th>
@@ -192,12 +193,13 @@ sqlsrv_close($conn);
             </thead>
             <tbody>
                 <?php foreach ($saldos as $row): ?>
-                <tr data-date="<?php echo htmlspecialchars($row['fecha']->format('Y-m-d')); ?>">
+                <tr>
                     <td><?php echo htmlspecialchars($row['fecha']->format('Y-m-d')); ?></td>
                     <td><?php echo htmlspecialchars($row['cedula_emp']); ?></td>
-                    <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
                     <td><?php echo htmlspecialchars($row['APELLIDO_EMP']); ?></td>
+                    <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
                     <td><?php echo htmlspecialchars($row['nombre_gfc']); ?></td>
+                    <td><?php echo htmlspecialchars($row['nombre_efc']); ?></td> 
                     <td><?php echo htmlspecialchars($row['desayuno_subsidio']); ?></td>
                     <td><?php echo htmlspecialchars($row['almuerzo_subsidio']); ?></td>
                     <td><?php echo htmlspecialchars($row['almuerzo_empresa']); ?></td>
@@ -212,7 +214,7 @@ sqlsrv_close($conn);
             <!-- Fila de totales dentro de la misma tabla -->
             <tfoot>
                 <tr class="totales">
-                    <td colspan="5">Totales:</td>
+                    <td colspan="6">Totales:</td>
                     <td id="totalDesayunoS">0.00 $</td>
                     <td id="totalAlmuerzoS">0.00 $</td>
                     <td id="totalAlmuerzoP">0.00 $</td>
@@ -241,31 +243,31 @@ sqlsrv_close($conn);
             });
 
             function actualizarTotales() {
-                let totalDesayunoS = 0, totalAlmuerzoS = 0, totalAlmuerzoP = 0,
-                    totalMeriendaS = 0, totalRefrigerioS = 0, totalS = 0, totalP = 0, totalGeneral = 0;
+    let totalDesayunoS = 0, totalAlmuerzoS = 0, totalAlmuerzoP = 0,
+        totalMeriendaS = 0, totalRefrigerioS = 0, totalS = 0, totalP = 0, totalGeneral = 0;
 
-                table.rows({ filter: 'applied' }).every(function () {
-                    let data = this.data();
+    table.rows({ filter: 'applied' }).every(function () {
+        let data = this.data();
 
-                    totalDesayunoS += parseFloat(data[4]) || 0;
-                    totalAlmuerzoS += parseFloat(data[5]) || 0;
-                    totalAlmuerzoP += parseFloat(data[6]) || 0;
-                    totalMeriendaS += parseFloat(data[7]) || 0;
-                    totalRefrigerioS += parseFloat(data[8]) || 0;
-                    totalS += parseFloat(data[9]) || 0;
-                    totalP += parseFloat(data[10]) || 0;
-                    totalGeneral += parseFloat(data[11]) || 0;
-                });
+        totalDesayunoS += parseFloat(data[6]) || 0;
+        totalAlmuerzoS += parseFloat(data[7]) || 0;
+        totalAlmuerzoP += parseFloat(data[8]) || 0;
+        totalMeriendaS += parseFloat(data[9]) || 0;
+        totalRefrigerioS += parseFloat(data[10]) || 0;
+        totalS += parseFloat(data[11]) || 0;
+        totalP += parseFloat(data[12]) || 0;
+        totalGeneral += parseFloat(data[13]) || 0;
+    });
 
-                $('#totalDesayunoS').text(totalDesayunoS.toFixed(2) + " $");
-                $('#totalAlmuerzoS').text(totalAlmuerzoS.toFixed(2) + " $");
-                $('#totalAlmuerzoP').text(totalAlmuerzoP.toFixed(2) + " $");
-                $('#totalMeriendaS').text(totalMeriendaS.toFixed(2) + " $");
-                $('#totalRefrigerioS').text(totalRefrigerioS.toFixed(2) + " $");
-                $('#totalS').text(totalS.toFixed(2) + " $");
-                $('#totalP').text(totalP.toFixed(2) + " $");
-                $('#totalGeneral').text(totalGeneral.toFixed(2) + " $");
-            }
+    $('#totalDesayunoS').text(totalDesayunoS.toFixed(2) + " $");
+    $('#totalAlmuerzoS').text(totalAlmuerzoS.toFixed(2) + " $");
+    $('#totalAlmuerzoP').text(totalAlmuerzoP.toFixed(2) + " $");
+    $('#totalMeriendaS').text(totalMeriendaS.toFixed(2) + " $");
+    $('#totalRefrigerioS').text(totalRefrigerioS.toFixed(2) + " $");
+    $('#totalS').text(totalS.toFixed(2) + " $");
+    $('#totalP').text(totalP.toFixed(2) + " $");
+    $('#totalGeneral').text(totalGeneral.toFixed(2) + " $");
+}
 
             actualizarTotales();
 
@@ -301,16 +303,18 @@ sqlsrv_close($conn);
                     return {
                         "Mes": row[0],
                         "Cédula": row[1],
-                        "Nombre": row[2],
-                        "Apellido": row[3],
-                        "Desayuno.S": row[4],
-                        "Almuerzo.S": row[5],
-                        "Almuerzo.P": row[6],
-                        "Merienda.S": row[7],
-                        "Refrigerio.S": row[8],
-                        "Total.S": row[9],
-                        "Total.P": row[10],
-                        "TOTAL": row[11]
+                        "Apellido": row[2],
+                        "Nombre": row[3],
+                        "Finca": row[4],
+                        "Área": row[5],
+                        "Desayuno.S": row[6],
+                        "Almuerzo.S": row[7],
+                        "Almuerzo.P": row[8],
+                        "Merienda.S": row[9],
+                        "Refrigerio.S": row[10],
+                        "Total.S": row[11],
+                        "Total.P": row[12],
+                        "TOTAL": row[13]
                     };
                 }));
 

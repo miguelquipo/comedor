@@ -2,7 +2,7 @@
 include './PHP/Usuarios/check_access.php';
 
 // Asegura que solo los usuarios con role_id 2 (editor) o 1 (admin) puedan acceder
-checkAccess([1, 2]);
+checkAccess([1, 3]);
 ?>
 <?php
 include './PHP/db.php';

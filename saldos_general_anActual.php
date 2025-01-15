@@ -162,9 +162,10 @@ sqlsrv_close($conn);
             <thead class="thead-light">
                 <tr>
                     <th>Cédula</th>
-                    <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Nombre</th>
                     <th>Finca</th>
+                    <th>Área</th>
                     <th>Desayunos</th>
                     <th>Almuerzos</th>
                     <th>Meriendas</th>
@@ -177,8 +178,9 @@ sqlsrv_close($conn);
                 <?php foreach ($saldos as $row): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['cedula_emp']); ?></td>
-                        <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
                         <td><?php echo htmlspecialchars($row['APELLIDO_EMP']); ?></td>
+                        <td><?php echo htmlspecialchars($row['NOMBRE_EMP']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nombre_efc']); ?></td>
                         <td><?php echo htmlspecialchars($row['nombre_gfc']); ?></td>
                         <td><?php echo htmlspecialchars($row['desayunos']); ?></td>
                         <td><?php echo htmlspecialchars($row['almuerzos']); ?></td>
@@ -191,7 +193,7 @@ sqlsrv_close($conn);
             <!-- Fila de totales -->
             <tfoot>
                 <tr>
-                    <td colspan="4">Totales:</td>
+                    <td colspan="5">Totales:</td>
                     <td id="totalDesayunos">0</td>
                     <td id="totalAlmuerzos">0</td>
                     <td id="totalMeriendas">0</td>
@@ -246,11 +248,11 @@ sqlsrv_close($conn);
             // Iterar sobre las filas visibles de la tabla
             table.rows({ search: 'applied' }).every(function() {
                 var data = this.data();
-                totalDesayunos += parseInt(data[3]) || 0; // Desayunos
-                totalAlmuerzos += parseInt(data[4]) || 0; // Almuerzos
-                totalMeriendas += parseInt(data[5]) || 0; // Meriendas
-                totalRefrigerios += parseInt(data[6]) || 0; // Refrigerios
-                totalComidas += parseFloat(data[7].replace('$', '').trim()) || 0; // Total Comidas
+                totalDesayunos += parseInt(data[5]) || 0; // Desayunos
+                totalAlmuerzos += parseInt(data[6]) || 0; // Almuerzos
+                totalMeriendas += parseInt(data[7]) || 0; // Meriendas
+                totalRefrigerios += parseInt(data[8]) || 0; // Refrigerios
+                totalComidas += parseFloat(data[9].replace('$', '').trim()) || 0; // Total Comidas
             });
 
             // Actualizar los totales en el pie de la tabla

@@ -1,5 +1,6 @@
 <?php
 include 'db.php';
+include 'determinar_tipo_comida.php';
 require('fpdf/fpdf.php'); // Incluir la librería FPDF
 
 // Obtener las cédulas enviadas por AJAX
@@ -38,21 +39,13 @@ foreach ($cedulas_emp as $cedula_emp) {
     $nombre_emp = $resultBuscarEmpleado['NOMBRE_EMP'];
     $apellido_emp = $resultBuscarEmpleado['APELLIDO_EMP'];
 
-    // Determinar el tipo de comida basado en la hora actual
-    if ($horaActual >= '04:00:00' && $horaActual <= '08:00:00') {
-        $tipoComida = 'Desayuno';
-    } elseif ($horaActual >= '08:00:01' && $horaActual <= '11:19:59') {
-        $tipoComida = 'Refrigerio';
-    } elseif ($horaActual >= '11:20:00' && $horaActual <= '15:00:00') {
-        $tipoComida = 'Almuerzo';
-    } elseif ($horaActual >= '15:00:01' && $horaActual <= '17:59:59') {
-        $tipoComida = 'Refrigerio';
-    } elseif ($horaActual > '18:00:00') {
-        $tipoComida = 'Merienda';
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Hora fuera de rango para comida', 'cedula' => $cedula_emp]);
-        exit();
-    }
+     // ** Usar la función determinarTipoComida **
+     $tipoComida = determinarTipoComida($horaActual); // Llamada a la función
+    
+     if ($tipoComida === null) { // Si no retorna un tipo válido
+         echo json_encode(['success' => false, 'message' => 'Hora fuera de rango para comida', 'cedula' => $cedula_emp]);
+         exit();
+     }
 
     // Obtener el id_com y subsidio de la tabla HorariosComida
     $sqlObtenerIdCom = "SELECT id_com, tipo, subS FROM [dbo].[HorariosComida] WHERE tipo = ?";

@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <span id="confirmPasswordError" class="error-message"></span>
             <button type="submit" class="form-button">Registrar</button>
         </form>
-        <a href="/cultiverde-rendimientos/PHP/Usuarios/login.php" class="login-link">¿Dispones de una cuenta? Click aquí para iniciar</a>
+        <a href="/comedor/PHP/Usuarios/login.php" class="login-link">¿Dispones de una cuenta? Click aquí para iniciar</a>
     </div>
 
     <script>
